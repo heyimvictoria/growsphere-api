@@ -1,4 +1,4 @@
 # GrowSphere
-
-# Stephen Devine
-
+Sam Goessling
+Stephen Devine
+Ryan Winkler
