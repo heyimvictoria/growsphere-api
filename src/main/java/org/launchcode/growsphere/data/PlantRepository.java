@@ -1,4 +1,4 @@
 package org.launchcode.growsphere.data;
 
-public class PlantRepository {
+public interface PlantRepository {
 }
