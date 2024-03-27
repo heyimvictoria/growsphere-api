@@ -1,60 +1,58 @@
 package org.launchcode.growsphere.controllers;
 
+import jakarta.validation.Valid;
 import org.launchcode.growsphere.data.PlantRepository;
-import org.launchcode.growsphere.exceptions.PlantNotFoundException;
 import org.launchcode.growsphere.models.Plant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Optional;
 
 @RestController
-@CrossOrigin("http://localhost:3000/")
+@RequestMapping("plants")
 public class PlantController {
 
     @Autowired
     private PlantRepository plantRepository;
 
-    @PostMapping("/plant")
-    Plant newPlant(@RequestBody Plant newPlant) {
-        return plantRepository.save(newPlant);
+
+    @GetMapping("/")
+    public String index(Model model) {
+        model.addAttribute("title", "Plants");
+        model.addAttribute("plants", plantRepository.findAll());
+        return "plants/index";
     }
 
-    @GetMapping("/plants")
-    List<Plant> getAllPlants() {
-       return (List<Plant>) plantRepository.findAll();
+    @GetMapping("add")
+    public String displayAddPlantForm(Model model) {
+        model.addAttribute(new Plant());
+        return "plants/add";
     }
 
-    @GetMapping("/plant/{id}")
-    Plant getPlantById(@PathVariable int id) {
-        return plantRepository.findById(id)
-                .orElseThrow(() ->new PlantNotFoundException(id));
-    }
-    @PutMapping("/plant/{id}")
-    Plant updatePlant(@RequestBody Plant newPlant, @PathVariable int id) {
-        return plantRepository.findById(id)
-                .map(plant -> {
-                    plant.setCommonName(newPlant.getCommonName());
-                    plant.setScientificName(newPlant.getScientificName());
-                    plant.setPlantType(newPlant.getPlantType());
-                    plant.setExposure(newPlant.getExposure());
-                    plant.setFertilizer(newPlant.getFertilizer());
-                    plant.setHarvest(newPlant.getHarvest());
-                    plant.setPhLevel(newPlant.getPhLevel());
-                    plant.setSow(newPlant.getSow());
-                    plant.setWaterRequirements(newPlant.getWaterRequirements());
+    @PostMapping("add")
+    public String processAddPlantForm(@ModelAttribute @Valid Plant newPlant,
+                                      Errors errors, Model model) {
 
-                    return plantRepository.save(plant);
-                }).orElseThrow(()->new PlantNotFoundException(id));
-
-    }
-    @DeleteMapping("/plant/{id}")
-    String deletePlant(@PathVariable int id) {
-        if(!plantRepository.existsById(id)) {
-            throw new PlantNotFoundException(id);
+        if (errors.hasErrors()) {
+            return "plants/add";
         }
-        plantRepository.deleteById(id);
-        return "Plant with ID:" + id + " has been successfully deleted.";
+        plantRepository.save(newPlant);
+        return "redirect:";
     }
-}
 
+    @GetMapping("view/{plantId}")
+    public String displayViewPlant(Model model, @PathVariable int plantId) {
+
+        Optional optPlant = plantRepository.findById(plantId);
+
+        if (optPlant.isPresent()) {
+            Plant plant = (Plant) optPlant.get();
+            model.addAttribute("plant", plant);
+            return "plants/view";
+        } else {
+            return "redirect:../";
+        }
+    }}
