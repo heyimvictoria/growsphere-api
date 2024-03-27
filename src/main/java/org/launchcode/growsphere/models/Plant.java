@@ -8,9 +8,9 @@ import java.util.List;
 @Entity
 public class Plant extends AbstractEntity {
 
-    private String commonName;
-
     private String scientificName;
+
+    private String commonName;
 
     private String plantType;
 
