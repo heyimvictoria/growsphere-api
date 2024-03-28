@@ -13,10 +13,10 @@ public class User extends AbstractEntity {
 
     private String email;
 
+    private String password;
+
     @ManyToMany
     private final List<Plant> plants = new ArrayList<>();
-
-    // TODO: Getters, setters, toString
 
 
     public String getUsername() {
@@ -33,6 +33,14 @@ public class User extends AbstractEntity {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public List<Plant> getPlants() {
